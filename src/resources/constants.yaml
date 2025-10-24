@@ -1,0 +1,6 @@
+logs_config:
+  logs_path: app.log
+
+
+data_dir:
+  folderpath: ./data
