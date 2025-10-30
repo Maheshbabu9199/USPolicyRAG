@@ -1,7 +1,8 @@
 from src.utilities.logger import Logger
 from fastapi.requests import Request
 from src.utilities.constants import ConstantsRetriever
-from src.router.dataclasses import UploadDocumentRequest, JsonDataDetails
+from src.router.datamodels import UploadDocumentRequest, JsonDataDetails
+from src.utilities.qdrant_vectordb import QdrantClientClass
 from langchain_core.documents import Document
 import os 
 import json
@@ -15,7 +16,7 @@ class DocumentsHandler:
 
 
     def __init__(self):
-        ...
+        self.vectordb = QdrantClientClass()
 
 
     def getData(self, filepath:str):
@@ -58,6 +59,9 @@ class DocumentsHandler:
         
     
     def getJsonlist(self, filepath:str):
+        """
+        this is to parse the data from the file and return the only required info.
+        """
         try:
             data = self.getData(filepath=filepath)
             json_details = []
@@ -99,7 +103,7 @@ class DocumentsHandler:
         try:
             logger.info(f"started creating chunks...")
             complete_jsondata = [] 
-            for file in fileslist[1:]:
+            for file in fileslist:
                 filepath = os.path.join(ConstantsRetriever.getConstants('data_dir')['folderpath'], file)
                 jsondatalist = self.getJsonlist(filepath=filepath)
                 complete_jsondata.extend(jsondatalist)
@@ -107,7 +111,7 @@ class DocumentsHandler:
             chunks = []
             for json in complete_jsondata:
                 json = self.parseJson(json)
-                chunks.append(Document(content=json.rawtext, metadata={'document_identifier': json.identifier,
+                chunks.append(Document(page_content=json.rawtext, metadata={'document_identifier': json.identifier,
                                                                         'year': json.year,
                                                                         'title': json.title,
                                                                         'actions': json.actions,
@@ -126,15 +130,29 @@ class DocumentsHandler:
 
 
     def processData(self, request:UploadDocumentRequest):
+        """ 
+        from the folderpath, reads the files, gets the data and vectorizes the selected fields to the vectordb
+
+        args:
+            request (UploadDocumentRequest) : request
+
+        returns:
+            upload_status (str) : successful message
+        
+        """
         try:
 
             # getting the list of files from the folder 
-            fileslist = self.__getfiles(request.folderpath) 
+            fileslist : list[str] = self.__getfiles(request.folderpath) 
             logger.critical(f"read files from the path: {request.folderpath}, total files {len(fileslist)}")
 
             # getting the list of jsons from the each file
-            chunks = self.create_chunks(fileslist)
-            return chunks 
+            chunks : list[Document] = self.create_chunks(fileslist)
+            
+            # upload to vectordb
+            upload_status = self.vectordb.uploadData(chunks)
+            
+            return upload_status
 
         except Exception as exe:
             logger.error(f"error while processing json data: {exe}", exc_info=True)

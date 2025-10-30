@@ -4,3 +4,13 @@ logs_config:
 
 data_dir:
   folderpath: ./data
+
+
+llms_config:
+  
+  query_rewritellm_serviceprovider: groq
+  answer_llm_serviceprovider: openai
+
+
+
+

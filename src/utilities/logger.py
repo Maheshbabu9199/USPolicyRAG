@@ -20,7 +20,7 @@ class Logger(MySingleton):
         os.makedirs(logs_folder, exist_ok=True)
         filename = ConstantsRetriever.getConstants('logs_config')['logs_path']
         
-        logging_format = "%(asctime)s %(levelname)s %(lineno)s %(module)s %(funcName)s %(message)s"
+        logging_format = "%(asctime)s : %(levelname)s : %(lineno)s : %(module)s : %(funcName)s : %(message)s"
         logging.basicConfig(format=logging_format, 
                             level=logging.INFO,
                             handlers=[FileHandler(filename=filename), StreamHandler()])

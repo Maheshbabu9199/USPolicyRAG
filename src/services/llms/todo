@@ -1,0 +1,4 @@
+- refactor openai llms code
+- refactor using use protocols 
+- remove hardcoded values
+- make ui

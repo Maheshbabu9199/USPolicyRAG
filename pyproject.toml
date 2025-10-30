@@ -5,13 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "ddgs>=9.6.1",
     "fastapi>=0.120.0",
     "langchain>=1.0.2",
     "langchain-community>=0.4",
     "langchain-core>=1.0.1",
+    "langchain-groq>=1.0.0",
+    "langchain-openai>=1.0.1",
+    "opik>=1.8.87",
     "pandas>=2.3.3",
     "pyyaml>=6.0.3",
     "qdrant-client>=1.15.1",
+    "rank-bm25>=0.2.2",
     "sentence-transformers>=5.1.2",
     "uvicorn>=0.38.0",
 ]

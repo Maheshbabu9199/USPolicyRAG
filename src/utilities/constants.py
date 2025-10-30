@@ -5,7 +5,9 @@ import yaml
 class ConstantsRetriever:
 
     
-    with open("/home/user/Projects/USPolicyRAG/src/resources/constants.yaml", 'r') as f:
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    CONSTANTS_PATH = os.path.join(CURRENT_DIR, "../resources", "constants.yaml")
+    with open(CONSTANTS_PATH, 'r') as f:
         constants = yaml.safe_load(f)
 
     @staticmethod
